@@ -54,8 +54,13 @@ type PageModel
 
 init : Decode.Value -> Url -> Nav.Key -> ( Model, Cmd Msg )
 init flags url navKey =
-    ( { mobileNavbarOpen = False, pageModel = Home <| Home.initModel navKey }
-    , Cmd.none
+    let
+        route =
+            Route.fromUrl url
+                |> Maybe.withDefault Route.Home
+    in
+    ( { mobileNavbarOpen = False, pageModel = Redirect navKey }
+    , Route.replaceUrl navKey route
     )
 
 
@@ -66,10 +71,11 @@ init flags url navKey =
 view : Model -> Document Msg
 view model =
     let
-        viewPage toMsg pageView =
+        viewPage showHero toMsg pageView =
             let
                 { title, body } =
                     Page.view
+                        showHero
                         { mobileNavbarOpen = model.mobileNavbarOpen
                         , toggleMobileNavbar = ToggledMobileNavbar
                         }
@@ -82,16 +88,16 @@ view model =
     in
     case model.pageModel of
         Redirect _ ->
-            viewPage (\_ -> Ignored) Blank.view
+            viewPage False (\_ -> Ignored) Blank.view
 
         NotFound _ ->
-            viewPage (\_ -> Ignored) NotFound.view
+            viewPage False (\_ -> Ignored) NotFound.view
 
         Home home ->
-            viewPage GotHomeMsg (Home.view home)
+            viewPage True GotHomeMsg (Home.view home)
 
         AboutUs _ ->
-            viewPage (\_ -> Ignored) AboutUs.view
+            viewPage False (\_ -> Ignored) AboutUs.view
 
 
 

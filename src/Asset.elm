@@ -1,4 +1,4 @@
-module Asset exposing (Image, githubLogo, src)
+module Asset exposing (Image, arie, jake, number, src, win)
 
 {-| Assets, such as images, videos, and audio.
 
@@ -19,9 +19,26 @@ type Image
 -- IMAGES
 
 
-githubLogo : Image
-githubLogo =
-    image "github-logo.png"
+arie : Image
+arie =
+    image "arie.jpg"
+
+
+jake : Image
+jake =
+    image "jake.jpg"
+
+
+number : Int -> Image
+number =
+    String.fromInt
+        >> (\numberAsString -> "number-" ++ numberAsString ++ ".jpg")
+        >> image
+
+
+win : Image
+win =
+    image "win.jpg"
 
 
 image : String -> Image
